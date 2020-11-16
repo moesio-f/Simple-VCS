@@ -1,10 +1,16 @@
-#ifndef SIMPLE_CVS_UTILS_H
-#define SIMPLE_CVS_UTILS_H
+#ifndef SIMPLE_VCS_UTILS_H
+#define SIMPLE_VCS_UTILS_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
+
+#define LINE_SIZE 512
+#define DIR_SIZE 128
+#define CONFIG_FILE_NAME "simple-vcs.config"
 
 typedef struct {
     char *name;
@@ -24,4 +30,4 @@ typedef struct {
     Commit *commits;
 }Repository;
 
-#endif //SIMPLE_CVS_UTILS_H
+#endif //SIMPLE_VCS_UTILS_H

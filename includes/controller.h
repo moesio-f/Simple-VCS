@@ -3,10 +3,10 @@
 
 #include "utils.h"
 
-typedef enum {SEARCH = 0, SORT, CVS_INIT, CVS_COMMIT, CVS_LIST, CVS_CHECKOUT}Operation;
+typedef enum {SEARCH = 0, SORT, VCS_INIT, VCS_COMMIT, VCS_LIST, VCS_CHECKOUT}Operation;
 
-FILE* openFile(char *name); //Open the file
-char* getDirectory(); //Looks for "simple-vcs.config" and returns the dir path
+FILE* openFile(char *name, char *mode); //Open the file
+char* getDirectory(); //Looks for "simple-vcs.config" and returns the dir path (MUST be freed)
 void createConfigFile(); //Create "simple-vcs.config" with default values (i. e., current dir and "user")
 void setDirectory(char *newDir); //Update "simple-vcs.config" to set the new dir path
 void setUsername(char *name); //Update "simple-vcs.config" to set the username

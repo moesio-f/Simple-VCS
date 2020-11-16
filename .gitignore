@@ -1,0 +1,12 @@
+#Executáveis e Arquivos Objetos
+*.o
+*.exe
+*.out
+*.app
+*.xml
+
+#Arquivos/Pastas do Clion
+.idea/
+cmake-build-*/
+debug-*/
+CMakeLists.txt

@@ -10,6 +10,7 @@
 
 #define LINE_SIZE 512
 #define DIR_SIZE 128
+#define USER_SIZE 64
 #define CONFIG_FILE_NAME "simple-vcs.config"
 
 typedef struct {

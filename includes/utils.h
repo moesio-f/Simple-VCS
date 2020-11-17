@@ -7,6 +7,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <windows.h>
 
 #define LINE_SIZE 512
 #define DIR_SIZE 128

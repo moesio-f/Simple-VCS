@@ -11,13 +11,13 @@ static void replaceBackSlash(char *str) {
 }
 
 void createConfigFile() {
-    FILE *config = openFile(CONFIG_FILE_NAME, "r");
+    FILE *config = fopen(CONFIG_FILE_NAME, "r");
     if(config != NULL) {
         fclose(config);
         return;
     }
 
-    config = openFile(CONFIG_FILE_NAME, "w");
+    config = fopen(CONFIG_FILE_NAME, "w");
 
     char user_info[USER_SIZE] = "User\n";
     char dir[DIR_SIZE];
@@ -29,12 +29,8 @@ void createConfigFile() {
     fclose(config);
 }
 
-FILE* openFile(char *name, char *mode) {
-    return fopen(name, mode);
-}
-
 char* getDirectory() {
-    FILE *config = openFile(CONFIG_FILE_NAME, "r");
+    FILE *config = fopen(CONFIG_FILE_NAME, "r");
     char *dir;
     dir = malloc(sizeof(char[DIR_SIZE + 1]));
     fgets(dir, DIR_SIZE, config);
@@ -44,7 +40,7 @@ char* getDirectory() {
 }
 
 char* getUser() {
-    FILE *config = openFile(CONFIG_FILE_NAME, "r");
+    FILE *config = fopen(CONFIG_FILE_NAME, "r");
     char *dir;
     dir = malloc(sizeof(char[DIR_SIZE + 1]));
     fgets(dir, DIR_SIZE, config);
@@ -59,9 +55,10 @@ char* getUser() {
 }
 
 void setDirectory(char *newDir){
-    FILE *new_config = openFile("temp.config", "w");
+    FILE *new_config = fopen("temp.config", "w");
 
     char *user = getUser();
+    replaceBackSlash(newDir);
     sprintf(newDir, "%s\n", newDir);
     sprintf(user, "%s\n", user);
 
@@ -76,7 +73,7 @@ void setDirectory(char *newDir){
 }
 
 void setUsername(char *name) {
-    FILE *new_config = openFile("temp.config", "w");
+    FILE *new_config = fopen("temp.config", "w");
     char *dir = getDirectory();
 
     sprintf(dir, "%s\n", dir);

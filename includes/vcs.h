@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-bool initRepo(FILE *file, char *name); //Initialize a new repo (.filename folder with main.cvs)
+void initRepo(char *name); //Initialize a new repo (.filename folder with main.cvs)
 Repository* loadRepo(char *fileName); //Load a repo (i. e., main.cvs)
 void listVersions(char *fileName); //List all versions of the file
 void commit(FILE *file, Repository *repo, char *message, char *tag); //Commit the file to the repo

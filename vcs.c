@@ -1,8 +1,39 @@
 #include "includes/vcs.h"
 #include "includes/controller.h"
 
-//Instead of editing, open a file, store its contents on a struct and then overwrite the file
-// New functions: writeRepo(Repository *repo), printRepo(Repository *repo) #Maybe new variables to hold directory
+static void writeRepo(Repository *repo, char *main_path) {
+    FILE *vcs_main = fopen(main_path, "w");
+    char header[LINE_SIZE], n_commits[LINE_SIZE];
+
+    sprintf(header, "%s %s\n", repo->author.name, repo->author.date);
+    sprintf(n_commits, "%d\n", repo->number_commits);
+
+    fputs(header, vcs_main);
+    fputs(n_commits, vcs_main);
+
+    for(int i = 0; i < repo->number_commits; i++) {
+        fputs("\n", vcs_main);
+
+        char identifier[IDENTIFIER_SIZE], message[LINE_SIZE], authorInfo[LINE_SIZE], commitFileName[LINE_SIZE];
+        sprintf(identifier, "%s\n", repo->commits[i].identifier);
+        sprintf(authorInfo, "%s %s\n", repo->commits[i].author.name, repo->commits[i].author.date);
+        sprintf(message, "%s\n", repo->commits[i].message);
+        sprintf(commitFileName, "%s\n", repo->commits[i].fileName);
+
+        fputs(identifier, vcs_main);
+        fputs(authorInfo, vcs_main);
+        fputs(message, vcs_main);
+        fputs(commitFileName, vcs_main);
+    }
+
+    fclose(vcs_main);
+}
+
+static void newIdentifier(char *str, int n) {
+    char res[IDENTIFIER_SIZE];
+    sprintf(res, "commit%d", n);
+    strcpy(str, res);
+}
 
 static void discardNewLine(char *str) {
     for(int i = 0; i < strlen(str); i++) {
@@ -93,7 +124,6 @@ Repository* loadRepo(char *fileName) { //MUST BE FREED
     for(int i = 0; i < number_commits; i++) {
         fgets(line, LINE_SIZE, main_vcs);
         if(strcmp(line, "\n") == 0) {
-            printf("\nEntered\n");
             char identifier[IDENTIFIER_SIZE], message[LINE_SIZE], authorInfo[LINE_SIZE], commitFileName[LINE_SIZE];
             Author commitAuthor;
 
@@ -127,10 +157,47 @@ void listVersions(char *fileName) {
 
 }
 
-void commit(FILE *file, Repository *repo, char *message, char *identifier) {
+void commit(char *fileName, char *message) {
+    Repository *repo = loadRepo(fileName);
+    char *file_no_ext = discardExtension(fileName);
 
+    repo->number_commits++;
+    repo->commits = realloc(repo->commits, repo->number_commits*sizeof(Commit));
+
+    char *user = getUser();
+    char date[40];
+    Author commitAuthor;
+    time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    strftime(date, sizeof(date), "%d/%m/%Y", tm);
+    strcpy(commitAuthor.name, user);
+    strcpy(commitAuthor.date, date);
+
+    char identifier[IDENTIFIER_SIZE], commitFileName[IDENTIFIER_SIZE];
+    newIdentifier(identifier, repo->number_commits - 1);
+    sprintf(commitFileName, "%s.txt", identifier);
+
+    strcpy(repo->commits[repo->number_commits - 1].identifier, identifier);
+    strcpy(repo->commits[repo->number_commits - 1].message, message);
+    strcpy(repo->commits[repo->number_commits - 1].fileName, commitFileName);
+    repo->commits[repo->number_commits - 1].author = commitAuthor;
+
+    char repo_path[REPO_PATH_SIZE], main_path[REPO_PATH_SIZE], originalFilePath[REPO_PATH_SIZE], commitFilePath[REPO_PATH_SIZE], *dir;
+    dir = getDirectory();
+    sprintf(repo_path, "%s/.%s", dir, file_no_ext);
+    sprintf(main_path, "%s/main.vcs", repo_path);
+    sprintf(originalFilePath, "%s/%s", dir, fileName);
+    sprintf(commitFilePath, "%s/%s", repo_path, commitFileName);
+    
+    writeRepo(repo, main_path);
+    CopyFileA(originalFilePath, commitFilePath, FALSE);
+
+    free(file_no_ext);
+    free(user);
+    free(repo);
+    free(dir);
 }
 
-void checkout(FILE *file, Repository *repo, char *version) {
+void checkout(char *fileName, char *version) {
 
 }

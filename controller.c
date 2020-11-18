@@ -95,6 +95,7 @@ Operation getOperationFromText(char *text) {
     if(strcmp(text, "dir") == 0) return SET_DIR;
     if(strcmp(text, "user") == 0) return SET_USER;
     if(strcmp(text, "init") == 0) return VCS_INIT;
+    if(strcmp(text, "commit") == 0) return VCS_COMMIT;
     return -1;
 }
 
@@ -102,46 +103,57 @@ void selectOperation(char *args[], int argc) {
     //FILE *file;
     Operation operation = getOperationFromText(args[1]);
     switch (operation) {
-        case HELP:
+        case HELP: {
             help();
             break;
-        case SET_DIR:
-            if(argc < 3) {
+        }
+        case SET_DIR: {
+            if (argc < 3) {
                 char *dir = getDirectory();
                 printf("The current directory is: %s", dir);
                 free(dir);
-            }
-            else {
+            } else {
                 setDirectory(args[2]);
                 char *dir = getDirectory();
                 printf("The current directory is now: %s", dir);
                 free(dir);
             }
             break;
-        case SET_USER:
-            if(argc < 3) {
+        }
+        case SET_USER: {
+            if (argc < 3) {
                 char *user = getUser();
                 printf("The current user is: %s", user);
                 free(user);
-            }
-            else {
+            } else {
                 setUsername(args[2]);
                 char *user = getUser();
                 printf("The current user is now: %s", user);
                 free(user);
             }
             break;
+        }
         //case LIST_REPOS: break;
         //case SEARCH: break;
         //case SORT: break;
-        case VCS_INIT:
-            if(initRepo(args[2])) {
+        case VCS_INIT: {
+            if (initRepo(args[2])) {
                 printf("A new repository has been created for %s\n", args[2]);
             } else {
                 printf("%s already has a repository.\n", args[2]);
             }
             break;
-        //case VCS_COMMIT: break;
+        }
+        case VCS_COMMIT: {
+            char message[LINE_SIZE];
+            strcpy(message, args[3]);
+            for(int i = 4; i < argc; i++) {
+                strcat(message, " ");
+                strcat(message, args[i]);
+            }
+            commit(args[2], message);
+            break;
+        }
         //case VCS_LIST_VERSIONS: break;
         //case VCS_CHECKOUT: break;
         default:
@@ -161,5 +173,6 @@ void help() {
     printf("dir [newDir]: if newDir is empty, show current directory. Otherwise, updates directory to newDir.\n");
     printf("user [newUser]: if newUser is empty, show user. Otherwise, set user to newUser\n");
     printf("init [fileName]: Initialize a new repository for the given file. (File must be on the current directory)\n");
+    printf("commit [fileName] [message]: Commit the current version of the file. (message can contain blanks and multiple words)\n");
     printf("General usage: \'Simple-VCS command arguments\'\n");
 }

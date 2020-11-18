@@ -25,9 +25,9 @@ typedef struct {
 
 typedef struct {
     char identifier[IDENTIFIER_SIZE];
+    Author author;
     char message[LINE_SIZE];
     char fileName[IDENTIFIER_SIZE];
-    Author author;
 }Commit;
 
 typedef struct {

@@ -10,19 +10,23 @@
 #include <windows.h>
 
 #define LINE_SIZE 512
-#define DIR_SIZE 128
 #define USER_SIZE 64
+#define DIR_SIZE 128
+#define REPO_PATH_SIZE 256
+#define IDENTIFIER_SIZE 32
+#define NAME_SIZE 48
+#define DATE_SIZE 24
 #define CONFIG_FILE_NAME "simple-vcs.config"
 
 typedef struct {
-    char *name;
-    char *date;
+    char name[NAME_SIZE];
+    char date[DATE_SIZE];
 }Author;
 
 typedef struct {
-    char *identifier;
-    char *message;
-    char *fileName;
+    char identifier[IDENTIFIER_SIZE];
+    char message[LINE_SIZE];
+    char fileName[IDENTIFIER_SIZE];
     Author author;
 }Commit;
 

@@ -12,7 +12,7 @@ void setDirectory(char *newDir); //Update "simple-vcs.config" to set the new dir
 void setUsername(char *name); //Update "simple-vcs.config" to set the username
 Operation getOperationFromText(char *text);
 void selectOperation(char *args[], int argc); //Select the operation to be done (commit, search, checkout, ...)
-void listRepositories(char *fileName); //List all repositories for the current directory
+void listRepositories(); //List all repositories for the current directory
 void help(); //List all commands and the current dir
 
 #endif //SIMPLE_VCS_CONTROLLER_H

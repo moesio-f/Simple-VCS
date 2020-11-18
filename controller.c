@@ -29,7 +29,7 @@ void createConfigFile() {
     fclose(config);
 }
 
-char* getDirectory() {
+char* getDirectory() { //MUST BE FREED
     FILE *config = fopen(CONFIG_FILE_NAME, "r");
     char *dir;
     dir = malloc(sizeof(char[DIR_SIZE + 1]));
@@ -39,7 +39,7 @@ char* getDirectory() {
     return dir;
 }
 
-char* getUser() {
+char* getUser() { //MUST BE FREED
     FILE *config = fopen(CONFIG_FILE_NAME, "r");
     char *dir;
     dir = malloc(sizeof(char[DIR_SIZE + 1]));
@@ -145,7 +145,7 @@ void selectOperation(char *args[], int argc) {
     }
 }
 
-void listRepositories(char *fileName){
+void listRepositories(){
 
 }
 

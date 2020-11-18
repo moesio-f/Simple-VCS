@@ -25,7 +25,7 @@ static char* discardExtension(char *str) { //MUST BE FREED
     }
 }
 
-void initRepo(char *fileName) {
+bool initRepo(char *fileName) {
     char repo_path[REPO_PATH_SIZE], *dir, main_path[REPO_PATH_SIZE];
     char *name_no_ext = discardExtension(fileName);
     dir = getDirectory();
@@ -39,7 +39,7 @@ void initRepo(char *fileName) {
     FILE *vcs_main = fopen(main_path, "r");
     if(vcs_main != NULL) {
         fclose(vcs_main);
-        return;
+        return false;
     }
 
     CreateDirectoryA(repo_path, NULL);
@@ -59,6 +59,7 @@ void initRepo(char *fileName) {
 
     free(user);
     fclose(vcs_main);
+    return true;
 }
 
 Repository* loadRepo(char *fileName) { //MUST BE FREED

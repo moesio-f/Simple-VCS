@@ -1,6 +1,6 @@
 #include "includes/controller.h"
-#include "search_sort.h"
-#include "vcs.h"
+#include "includes/search_sort.h"
+#include "includes/vcs.h"
 
 static void replaceBackSlash(char *str) {
     for(int i = 0; i < strlen(str); i++) {
@@ -92,15 +92,15 @@ void setUsername(char *name) {
 Operation getOperationFromText(char *text) {
     if(text == NULL) return -1;
     if(strcmp(text, "help") == 0) return HELP;
-    else if(strcmp(text, "dir") == 0) return SET_DIR;
-    else if(strcmp(text, "user") == 0) return SET_USER;
+    if(strcmp(text, "dir") == 0) return SET_DIR;
+    if(strcmp(text, "user") == 0) return SET_USER;
+    if(strcmp(text, "init") == 0) return VCS_INIT;
     return -1;
 }
 
 void selectOperation(char *args[], int argc) {
     //FILE *file;
     Operation operation = getOperationFromText(args[1]);
-
     switch (operation) {
         case HELP:
             help();
@@ -131,13 +131,19 @@ void selectOperation(char *args[], int argc) {
                 free(user);
             }
             break;
-        case LIST_REPOS: break;
-        case SEARCH: break;
-        case SORT: break;
-        case VCS_INIT: break;
-        case VCS_COMMIT: break;
-        case VCS_LIST_VERSIONS: break;
-        case VCS_CHECKOUT: break;
+        //case LIST_REPOS: break;
+        //case SEARCH: break;
+        //case SORT: break;
+        case VCS_INIT:
+            if(initRepo(args[2])) {
+                printf("A new repository has been created for %s\n", args[2]);
+            } else {
+                printf("%s already has a repository.\n", args[2]);
+            }
+            break;
+        //case VCS_COMMIT: break;
+        //case VCS_LIST_VERSIONS: break;
+        //case VCS_CHECKOUT: break;
         default:
             printf("Invalid command. Please try again.\n");
             printf("Type \'Simple-VCS help\' to list all commands available\n");
@@ -150,9 +156,10 @@ void listRepositories(){
 }
 
 void help() {
-    printf("Available commands:\n");
+    printf("\nAvailable commands:\n");
     printf("help: list all commands\n");
     printf("dir [newDir]: if newDir is empty, show current directory. Otherwise, updates directory to newDir.\n");
     printf("user [newUser]: if newUser is empty, show user. Otherwise, set user to newUser\n");
-    printf("General usage: \'Simple-VCS command arguments\'");
+    printf("init [fileName]: Initialize a new repository for the given file. (File must be on the current directory)\n");
+    printf("General usage: \'Simple-VCS command arguments\'\n");
 }

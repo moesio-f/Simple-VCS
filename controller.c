@@ -2,9 +2,9 @@
 #include "includes/search_sort.h"
 #include "includes/vcs.h"
 
-static void replaceBackSlash(char *str) {
-    for(int i = 0; i < strlen(str); i++) {
-        if(str[i] == '\\') {
+void replaceBackSlash(char *str) {
+    for (int i = 0; i < strlen(str); i++) {
+        if (str[i] == '\\') {
             str[i] = '/';
         }
     }
@@ -12,7 +12,7 @@ static void replaceBackSlash(char *str) {
 
 void createConfigFile() {
     FILE *config = fopen(CONFIG_FILE_NAME, "r");
-    if(config != NULL) {
+    if (config != NULL) {
         fclose(config);
         return;
     }
@@ -29,7 +29,7 @@ void createConfigFile() {
     fclose(config);
 }
 
-char* getDirectory() { //MUST BE FREED
+char *getDirectory() { //MUST BE FREED
     FILE *config = fopen(CONFIG_FILE_NAME, "r");
     char *dir;
     dir = malloc(sizeof(char[DIR_SIZE + 1]));
@@ -39,7 +39,7 @@ char* getDirectory() { //MUST BE FREED
     return dir;
 }
 
-char* getUser() { //MUST BE FREED
+char *getUser() { //MUST BE FREED
     FILE *config = fopen(CONFIG_FILE_NAME, "r");
     char *dir;
     dir = malloc(sizeof(char[DIR_SIZE + 1]));
@@ -54,7 +54,7 @@ char* getUser() { //MUST BE FREED
     return user;
 }
 
-void setDirectory(char *newDir){
+void setDirectory(char *newDir) {
     FILE *new_config = fopen("temp.config", "w");
 
     char *user = getUser();
@@ -90,19 +90,19 @@ void setUsername(char *name) {
 }
 
 Operation getOperationFromText(char *text) {
-    if(text == NULL) return -1;
-    if(strcmp(text, "help") == 0) return HELP;
-    if(strcmp(text, "dir") == 0) return SET_DIR;
-    if(strcmp(text, "user") == 0) return SET_USER;
-    if(strcmp(text, "init") == 0) return VCS_INIT;
-    if(strcmp(text, "commit") == 0) return VCS_COMMIT;
-    if(strcmp(text, "checkout") == 0) return VCS_CHECKOUT;
-    if(strcmp(text, "log") == 0) return VCS_LIST_VERSIONS;
+    if (text == NULL) return -1;
+    if (strcmp(text, "help") == 0) return HELP;
+    if (strcmp(text, "dir") == 0) return SET_DIR;
+    if (strcmp(text, "user") == 0) return SET_USER;
+    if (strcmp(text, "init") == 0) return VCS_INIT;
+    if (strcmp(text, "commit") == 0) return VCS_COMMIT;
+    if (strcmp(text, "checkout") == 0) return VCS_CHECKOUT;
+    if (strcmp(text, "log") == 0) return VCS_LIST_VERSIONS;
+    if(strcmp(text, "list") == 0) return LIST_REPOS;
     return -1;
 }
 
 void selectOperation(char *args[], int argc) {
-    //FILE *file;
     Operation operation = getOperationFromText(args[1]);
     switch (operation) {
         case HELP: {
@@ -135,9 +135,19 @@ void selectOperation(char *args[], int argc) {
             }
             break;
         }
-        //case LIST_REPOS: break;
-        //case SEARCH: break;
-        //case SORT: break;
+            case LIST_REPOS: {
+                printf("\nCurrent files under Simple-VCS:\n");
+                if(argc < 3) {
+                    char *dir = getDirectory();
+                    listRepositories(dir);
+                    free(dir);
+                } else {
+                    listRepositories(args[2]);
+                }
+                break;
+            }
+            //case SEARCH: break;
+            //case SORT: break;
         case VCS_INIT: {
             if (initRepo(args[2])) {
                 printf("A new repository has been created for %s\n", args[2]);
@@ -149,7 +159,7 @@ void selectOperation(char *args[], int argc) {
         case VCS_COMMIT: {
             char message[LINE_SIZE];
             strcpy(message, args[3]);
-            for(int i = 4; i < argc; i++) {
+            for (int i = 4; i < argc; i++) {
                 strcat(message, " ");
                 strcat(message, args[i]);
             }
@@ -171,8 +181,42 @@ void selectOperation(char *args[], int argc) {
     }
 }
 
-void listRepositories(){
+void listRepositories(char *dir) {
+    WIN32_FIND_DATA fdFile;
+    HANDLE hFind = NULL;
 
+    char sPath[DIR_SIZE];
+    sprintf(sPath, "%s/*.txt", dir);
+
+    hFind = FindFirstFile(sPath, &fdFile);
+
+    do {
+        if (strcmp(fdFile.cFileName, ".") != 0 && strcmp(fdFile.cFileName, "..") != 0) {
+            sprintf(sPath, "%s/%s", dir, fdFile.cFileName);
+
+            if (fdFile.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                listRepositories(sPath);
+            } else {
+                char *file_no_ext = discardExtension(fdFile.cFileName);
+                char main_path[REPO_PATH_SIZE], *repo_dir;
+                repo_dir = getDirectory();
+                sprintf(repo_dir, "%s/.%s", dir, file_no_ext);
+                sprintf(main_path, "%s/main.vcs", repo_dir);
+
+                FILE *vcs_main = fopen(main_path, "r");
+                if(vcs_main != NULL) {
+                    printf("%s\n", fdFile.cFileName);
+                }
+
+                fclose(vcs_main);
+                free(file_no_ext);
+                free(repo_dir);
+            }
+        }
+    }
+    while (FindNextFile(hFind, &fdFile));
+
+    FindClose(hFind);
 }
 
 void help() {
@@ -184,5 +228,6 @@ void help() {
     printf("commit [fileName] [message]: Commit the current version of the file. (message can contain blanks and multiple words)\n");
     printf("checkout [fileName] [identifier]: Go to another version of the file.\n");
     printf("log [fileName]: List all (committed) versions of the file.\n");
+    printf("list [dir]: List all repositories on the given dir (if none, use the current dir).\n");
     printf("General usage: \'Simple-VCS command arguments\'\n");
 }

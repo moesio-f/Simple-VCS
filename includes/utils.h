@@ -36,4 +36,8 @@ typedef struct {
     Commit *commits;
 }Repository;
 
+char* discardExtension(char *str); //memory MUST be FREED
+void replaceBackSlash(char *str);
+void discardNewLine(char *str);
+
 #endif //SIMPLE_VCS_UTILS_H

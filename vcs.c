@@ -35,7 +35,7 @@ static void newIdentifier(char *str, int n) {
     strcpy(str, res);
 }
 
-static void discardNewLine(char *str) {
+void discardNewLine(char *str) {
     for(int i = 0; i < strlen(str); i++) {
         if(str[i] == '\n') {
             str[i] = '\0';
@@ -44,7 +44,7 @@ static void discardNewLine(char *str) {
     }
 }
 
-static char* discardExtension(char *str) { //MUST BE FREED
+char* discardExtension(char *str) { //MUST BE FREED
     char *res;
     res = malloc(strlen(str)*sizeof(char));
     int i;

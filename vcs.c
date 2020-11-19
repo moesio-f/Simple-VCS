@@ -47,13 +47,16 @@ static void discardNewLine(char *str) {
 static char* discardExtension(char *str) { //MUST BE FREED
     char *res;
     res = malloc(strlen(str)*sizeof(char));
-    for(int i = 0; i < strlen(str); i++) {
+    int i;
+    for(i = 0; i < strlen(str); i++) {
         if(str[i] != '.') res[i] = str[i];
         else {
             res[i] = '\0';
             return res;
         }
     }
+    res[i] = '\0';
+    return res;
 }
 
 bool initRepo(char *fileName) {
@@ -117,7 +120,7 @@ Repository* loadRepo(char *fileName) { //MUST BE FREED
 
     strcpy(repoAuthor.name, strtok(header, " "));
     strcpy(repoAuthor.date, strtok(NULL, " "));
-    number_commits = atoi(n_commitsLine);
+    number_commits = atoi(n_commitsLine); // NOLINT(cert-err34-c)
     commits = malloc(number_commits * sizeof(Commit));
 
     char *line = malloc(LINE_SIZE*sizeof(char));
@@ -199,5 +202,25 @@ void commit(char *fileName, char *message) {
 }
 
 void checkout(char *fileName, char *version) {
+    Repository *repo = loadRepo(fileName);
+    char *file_no_ext = discardExtension(fileName);
 
+    char repo_path[REPO_PATH_SIZE], originalFilePath[REPO_PATH_SIZE], commitFilePath[REPO_PATH_SIZE], *dir;
+    dir = getDirectory();
+    sprintf(repo_path, "%s/.%s", dir, file_no_ext);
+    sprintf(originalFilePath, "%s/%s", dir, fileName);
+
+    for(int i = 0; i < repo->number_commits; i++) {
+        if(strcmp(repo->commits[i].identifier, version) == 0) {
+            sprintf(commitFilePath, "%s/%s", repo_path, repo->commits[i].fileName);
+            break;
+        }
+    }
+
+    DeleteFileA(originalFilePath);
+    CopyFileA(commitFilePath, originalFilePath, FALSE);
+
+    free(dir);
+    free(file_no_ext);
+    free(repo);
 }

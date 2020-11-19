@@ -96,6 +96,7 @@ Operation getOperationFromText(char *text) {
     if(strcmp(text, "user") == 0) return SET_USER;
     if(strcmp(text, "init") == 0) return VCS_INIT;
     if(strcmp(text, "commit") == 0) return VCS_COMMIT;
+    if(strcmp(text, "checkout") == 0) return VCS_CHECKOUT;
     return -1;
 }
 
@@ -155,7 +156,10 @@ void selectOperation(char *args[], int argc) {
             break;
         }
         //case VCS_LIST_VERSIONS: break;
-        //case VCS_CHECKOUT: break;
+        case VCS_CHECKOUT: {
+            checkout(args[2], args[3]);
+            break;
+        }
         default:
             printf("Invalid command. Please try again.\n");
             printf("Type \'Simple-VCS help\' to list all commands available\n");

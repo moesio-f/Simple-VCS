@@ -157,7 +157,17 @@ Repository* loadRepo(char *fileName) { //MUST BE FREED
 }
 
 void listVersions(char *fileName) {
+    Repository *repo = loadRepo(fileName);
 
+    for(int i = 0; i < repo->number_commits; i++) {
+        printf("\n********************************\n");
+        printf("Identifier: %s\n", repo->commits[i].identifier);
+        printf("Author: %s on %s\n", repo->commits[i].author.name, repo->commits[i].author.date);
+        printf("Message: %s", repo->commits[i].message);
+        printf("\n********************************\n");
+    }
+
+    free(repo);
 }
 
 void commit(char *fileName, char *message) {

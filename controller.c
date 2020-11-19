@@ -97,6 +97,7 @@ Operation getOperationFromText(char *text) {
     if(strcmp(text, "init") == 0) return VCS_INIT;
     if(strcmp(text, "commit") == 0) return VCS_COMMIT;
     if(strcmp(text, "checkout") == 0) return VCS_CHECKOUT;
+    if(strcmp(text, "log") == 0) return VCS_LIST_VERSIONS;
     return -1;
 }
 
@@ -155,7 +156,10 @@ void selectOperation(char *args[], int argc) {
             commit(args[2], message);
             break;
         }
-        //case VCS_LIST_VERSIONS: break;
+        case VCS_LIST_VERSIONS: {
+            listVersions(args[2]);
+            break;
+        }
         case VCS_CHECKOUT: {
             checkout(args[2], args[3]);
             break;
@@ -178,5 +182,7 @@ void help() {
     printf("user [newUser]: if newUser is empty, show user. Otherwise, set user to newUser\n");
     printf("init [fileName]: Initialize a new repository for the given file. (File must be on the current directory)\n");
     printf("commit [fileName] [message]: Commit the current version of the file. (message can contain blanks and multiple words)\n");
+    printf("checkout [fileName] [identifier]: Go to another version of the file.\n");
+    printf("log [fileName]: List all (committed) versions of the file.\n");
     printf("General usage: \'Simple-VCS command arguments\'\n");
 }

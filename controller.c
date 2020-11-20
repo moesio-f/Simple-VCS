@@ -98,7 +98,9 @@ Operation getOperationFromText(char *text) {
     if (strcmp(text, "commit") == 0) return VCS_COMMIT;
     if (strcmp(text, "checkout") == 0) return VCS_CHECKOUT;
     if (strcmp(text, "log") == 0) return VCS_LIST_VERSIONS;
-    if(strcmp(text, "list") == 0) return LIST_REPOS;
+    if (strcmp(text, "list") == 0) return LIST_REPOS;
+    if (strcmp(text, "find") == 0) return SEARCH;
+    if (strcmp(text, "sort") == 0) return SORT;
     return -1;
 }
 
@@ -135,7 +137,7 @@ void selectOperation(char *args[], int argc) {
             }
             break;
         }
-            case LIST_REPOS: {
+        case LIST_REPOS: {
                 printf("\nCurrent files under Simple-VCS:\n");
                 if(argc < 3) {
                     char *dir = getDirectory();
@@ -146,8 +148,13 @@ void selectOperation(char *args[], int argc) {
                 }
                 break;
             }
-            //case SEARCH: break;
-            //case SORT: break;
+        case SEARCH: {
+            char *res = findString(args[2], args[3]);
+            printf("\n%s\n", res);
+            free(res);
+            break;
+        }
+        //case SORT: break;
         case VCS_INIT: {
             if (initRepo(args[2])) {
                 printf("A new repository has been created for %s\n", args[2]);
@@ -174,10 +181,11 @@ void selectOperation(char *args[], int argc) {
             checkout(args[2], args[3]);
             break;
         }
-        default:
+        default: {
             printf("Invalid command. Please try again.\n");
             printf("Type \'Simple-VCS help\' to list all commands available\n");
             break;
+        }
     }
 }
 
@@ -229,5 +237,7 @@ void help() {
     printf("checkout [fileName] [identifier]: Go to another version of the file.\n");
     printf("log [fileName]: List all (committed) versions of the file.\n");
     printf("list [dir]: List all repositories on the given dir (if none, use the current dir).\n");
+    printf("find [fileName] [word]: Find the given word on the file.\n");
+    printf("sort [fileName] [mode] [listNumber]: Sort the n-th list with respect to the mode (increasing or decreasing).\n");
     printf("General usage: \'Simple-VCS command arguments\'\n");
 }

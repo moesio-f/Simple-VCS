@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <windows.h>
 
+#define MAX_LIST_ELEMENTS 20
 #define LINE_SIZE 512
 #define USER_SIZE 64
 #define DIR_SIZE 128

@@ -89,6 +89,13 @@ void setUsername(char *name) {
     rename("temp.config", CONFIG_FILE_NAME);
 }
 
+SortMode getSortModeFromText(char *text) {
+    if (text == NULL) return -1;
+    if (strcmp(text, "increasing") == 0) return INCREASING;
+    if (strcmp(text, "decreasing") == 0) return DECREASING;
+    return -1;
+}
+
 Operation getOperationFromText(char *text) {
     if (text == NULL) return -1;
     if (strcmp(text, "help") == 0) return HELP;
@@ -154,7 +161,15 @@ void selectOperation(char *args[], int argc) {
             free(res);
             break;
         }
-        //case SORT: break;
+        case SORT: {
+            SortMode mode = getSortModeFromText(args[3]);
+            if(mode != -1) {
+                sortList(atoi(args[4]), mode, args[2]);
+            } else {
+                printf("Invalid mode. Try again. (Available modes: increasing and decreasing)");
+            }
+            break;
+        }
         case VCS_INIT: {
             if (initRepo(args[2])) {
                 printf("A new repository has been created for %s\n", args[2]);
@@ -237,7 +252,7 @@ void help() {
     printf("checkout [fileName] [identifier]: Go to another version of the file.\n");
     printf("log [fileName]: List all (committed) versions of the file.\n");
     printf("list [dir]: List all repositories on the given dir (if none, use the current dir).\n");
-    printf("find [fileName] [word]: Find the given word on the file.\n");
-    printf("sort [fileName] [mode] [listNumber]: Sort the n-th list with respect to the mode (increasing or decreasing).\n");
+    printf("find [fileName] [word]: Find the first occurrence of the given word on file.\n");
+    printf("sort [fileName] [mode] [listNumber]: Sort the n-th list with respect to the mode (increasing or decreasing, returns the sorted list).\n");
     printf("General usage: \'Simple-VCS command arguments\'\n");
 }
